@@ -4,8 +4,9 @@ import re
 # Global replacements dictionary for the 'llvmarm' block
 REPLACEMENTS = {
     '-mcpu=a64fx': '-mcpu=native',
-    'mtune=a64fx': 'mtune=native'
-    # Add more replacements as needed
+    'mtune=a64fx': 'mtune=native',
+    'something': 'somethingelse',
+    'mpifcc': 'clang',
 }
 
 home_path = os.path.expanduser("~")
@@ -27,15 +28,18 @@ if match:
 	# print(match.group(2))
 	# Create a replica for 'llvmarm' and perform initial replacements
 	llvmarm_block = match.group(1).replace('llvm12', 'llvmarm')
-	
-	# Perform the specific replacements for 'llvmarm' block
-	for old_str, new_str in REPLACEMENTS.items():
-		llvmarm_block = llvmarm_block.replace(old_str, new_str)
-	# Insert the modified llvmarm block after the original 'llvm12' block
-	new_content = content.replace(match.group(0), match.group(0) + '\n' + llvmarm_block)
+    replacement_made = False
+    for old_str, new_str in REPLACEMENTS.items():
+        if key in lvvmarm_block:
+            llvmarm_block = llvmarm_block.replace(old_str, new_str)
+            replacement_made=True
 
-	with open(file_path, 'w') as file:
-		file.write(new_content)
+    if replacement_made:
+        # Insert the modified llvmarm block after the original 'llvm12' block
+        new_content = content.replace(match.group(0), match.group(0).rstrip() + '\n' + llvmarm_block)
+
+    with open(file_path, 'w') as file:
+        file.write(new_content)
 else:
 	print("Pattern for 'llvm12' not found!")
 
