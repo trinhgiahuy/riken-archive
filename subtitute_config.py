@@ -1,22 +1,20 @@
+import os
 import re
 
-def duplicate_and_substitute(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read()
+home_path = os.path.expanduser("~")
+file_path = os.path.join(home_path, "a.sh")
 
-    # Search for pattern of elif for BBB up until the second last 'fi'
-    pattern = re.compile(r'(elif \[\[  "\$1" = \*\\"BBB\\"\* \]\].*?)(?=fi.*fi)', re.DOTALL)
-    match = pattern.search(content)
+with open(file_path, 'r') as file:
+    content = file.read()
 
-    # If match is found, duplicate and substitute
-    if match:
-        bbb_section = match.group(1)
-        ccc_section = bbb_section.replace('BBB', 'CCC')
-        
-        new_content = content[:match.end(1)] + '\n' + ccc_section + content[match.end(1):]
+# Find the specific elif block
+pattern = r'(\s*elif \[\[ "\$1" = \*"\*BBB"\*\ \]\]; then.*?)(\s*fi\s*)'
+match = re.search(pattern, content, re.DOTALL)
 
-        with open(file_path, 'w') as f:
-            f.write(new_content)
+if match:
+    new_block = match.group(1).replace('BBB', 'CCC')
+    content = content.replace(match.group(0), match.group(1) + '\n' + new_block + match.group(2))
 
-file_path = "/path/to/your/script.sh"
-duplicate_and_substitute(file_path)
+with open(file_path, 'w') as file:
+    file.write(content)
+
