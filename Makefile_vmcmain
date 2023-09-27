@@ -1,0 +1,13 @@
+MPI_INC = $(shell mpicc --showme:incdirs)
+
+CC = mpicc
+SRC = vmcmain.c
+OPTION = -D_mpi_use
+CFLAGS = -O3 -openmp -opt-prefetch=3
+CFLAGS += -I$(MPI_INC)
+REPORT =
+
+all : vmcmain.o
+
+vmcmain.o : *.c *.h
+    $(CC) -c $(SRC) $(OPTION) $(CFLAGS) $(REPORT)
